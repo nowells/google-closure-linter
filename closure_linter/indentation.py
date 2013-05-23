@@ -38,6 +38,9 @@ Position = position.Position
 Type = javascripttokens.JavaScriptTokenType
 
 
+SPACES = 4
+
+
 # The general approach:
 #
 # 1. Build a stack of tokens that can affect indentation.
@@ -215,7 +218,7 @@ class IndentationRules(object):
           next_code = tokenutil.SearchExcept(next_code, Type.NON_CODE_TYPES)
         if next_code and next_code.string in ('else', 'case', 'default'):
           # TODO(robbyw): This almost certainly introduces false negatives.
-          expected |= self._AddToEach(expected, -2)
+          expected |= self._AddToEach(expected, SPACES * -1)
 
       if actual >= 0 and actual not in expected:
         expected = sorted(expected)
@@ -351,15 +354,15 @@ class IndentationRules(object):
       # Handle normal additive indentation tokens.
       if not token_info.overridden_by and token.string != 'return':
         if token_info.is_block:
-          expected = self._AddToEach(expected, 2)
-          hard_stops = self._AddToEach(hard_stops, 2)
+          expected = self._AddToEach(expected, SPACES)
+          hard_stops = self._AddToEach(hard_stops, SPACES)
           in_same_continuation = False
         elif in_same_continuation:
-          expected |= self._AddToEach(expected, 4)
-          hard_stops |= self._AddToEach(hard_stops, 4)
+          expected |= self._AddToEach(expected, SPACES * 2)
+          hard_stops |= self._AddToEach(hard_stops, SPACES * 2)
         else:
-          expected = self._AddToEach(expected, 4)
-          hard_stops |= self._AddToEach(hard_stops, 4)
+          expected = self._AddToEach(expected, SPACES * 2)
+          hard_stops |= self._AddToEach(hard_stops, SPACES * 2)
           in_same_continuation = True
 
       # Handle hard stops after (, [, return, =, and ?
@@ -384,7 +387,7 @@ class IndentationRules(object):
             hard_stops.add(start_index + len(token.string) + 1)
 
           elif token.IsOperator('?') and not token_info.overridden_by:
-            hard_stops.add(start_index + 2)
+            hard_stops.add(start_index + SPACES)
 
     return (expected | hard_stops) or set([0])
 
