@@ -358,8 +358,8 @@ class IndentationRules(object):
           hard_stops = self._AddToEach(hard_stops, SPACES)
           in_same_continuation = False
         elif in_same_continuation:
-          expected |= self._AddToEach(expected, SPACES * 2)
-          hard_stops |= self._AddToEach(hard_stops, SPACES * 2)
+          expected |= self._AddToEach(expected, SPACES)
+          hard_stops |= self._AddToEach(hard_stops, SPACES)
         else:
           expected = self._AddToEach(expected, SPACES * 2)
           hard_stops |= self._AddToEach(hard_stops, SPACES * 2)
